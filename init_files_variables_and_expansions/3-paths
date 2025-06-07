@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $PATH | tr ':' '\n' | while read d; do if [ -d "$d" ]; then echo yes; fi; done | wc -l
+echo "$PATH" | tr ':' '\n' | grep -c .
