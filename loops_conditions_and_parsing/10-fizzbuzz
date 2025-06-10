@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#fjdfkdjfdkj
+for i in {1..100};do
+echo "$i"
+if (( "$i" % 3 == 0 ));then
+echo "Fizz"
+elif (( "$i" % 5 == 0 ));then
+echo "Bazz" 
+fi
+done
