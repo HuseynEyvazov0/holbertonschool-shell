@@ -6,9 +6,9 @@ else
   echo "school file does not exist"
 fi
 
-if [ -e "school" ] && [ ! -s "school" ]; then
+if [ -e "school" ] && [ -z "school" ]; then
   echo "school file exists but is empty"
-elif [ -s "school" ]; then
+elif [ -n "school" ]; then
   echo "school file is not empty"
 fi
 
