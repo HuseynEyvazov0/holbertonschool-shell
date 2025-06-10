@@ -15,5 +15,3 @@ fi
 if [ -f "School" ]; then
   echo "school is a regular file"
 fi
-rm school
-
