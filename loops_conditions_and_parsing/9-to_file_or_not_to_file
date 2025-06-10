@@ -7,8 +7,8 @@ else
 fi
 
 if [ -e "school" ] && [ -z "school" ]; then
-  echo "school file exists but is empty"
-elif [ -n "school" ]; then
+  echo "school file is empty"
+elif [ -e "school"] && [ -n "school" ]; then
   echo "school file is not empty"
 fi
 
