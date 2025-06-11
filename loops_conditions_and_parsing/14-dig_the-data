@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 #sdjsdjsldj
 LOG_FILE="apache-access.log"
-if [[ ! -f $LOG_FILE ]]
-then
-echo "Log file $LOG_FILE not found!"
+
+# Проверка, что файл существует
+if [[ ! -f "$LOG_FILE" ]]; then
+  echo "Log file $LOG_FILE not found."
   exit 1
 fi
+
+# Вывод: OCCURRENCE_NUMBER IP HTTP_CODE
 awk 'NF >= 9 && $1 ~ /^[0-9.]+$/ && $9 ~ /^[0-9]+$/ { print $1, $9 }' "$LOG_FILE" \
   | sort \
   | uniq -c \
-  | sort -nr`
+  | sort -nr
