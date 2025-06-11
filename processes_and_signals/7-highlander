@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#sddsdssd
+# Обработчик сигнала SIGTERM
+term_handler() {
+    echo "I am invincible!!!"
+}
+
+# Установка trap на SIGTERM
+trap 'term_handler' SIGTERM
+
+# Бесконечный вывод с задержкой 2 секунды
+while true; do
+    echo "To infinity and beyond"
+    sleep 2
+done
