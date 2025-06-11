@@ -6,14 +6,7 @@ then
 echo "Log file $LOG_FILE not found!"
   exit 1
 fi
-awk '
-NF >= 9 && $1 ~ /^[0-9.]+$/ && $9 ~ /^[0-9]+$/ {
-    ip_status[$1 " " $9]++
-}
-END {
-    for (key in ip_status) {
-        print ip_status[key], key
-    }
-}
-' "$LOG_FILE" | sort -nr
-
+awk 'NF >= 9 && $1 ~ /^[0-9.]+$/ && $9 ~ /^[0-9]+$/ { print $1, $9 }' "$LOG_FILE" \
+  | sort \
+  | uniq -c \
+  | sort -nr`
