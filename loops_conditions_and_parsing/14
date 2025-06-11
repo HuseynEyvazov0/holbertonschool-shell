@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#sdjsdjsldj
+LOG_FILE="apache-access.log"
+if [[ ! -f $LOG_FILE ]]
+then
+echo "Log file $LOG_FILE not found!"
+  exit 1
+fi
+awk '{print $1,$9}' "$LOG_FILE"  | sort | uniq -c | sort -nr | awk '{print $1, $2, $3}'
