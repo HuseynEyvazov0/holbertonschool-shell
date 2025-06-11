@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2009
 
-# Получаем PID процесса "4-to_infinity_and_beyond"
-pid=$(ps -ef | grep "4-to_infinity_and_beyond" | grep -v grep | awk '{print $2}')
-
-# Проверяем, что PID существует и отправляем SIGTERM с помощью Perl
-if [ -n "$pid" ]; then
-  perl -e "kill 15, $pid"
+pids=$(ps -ef | grep "4-to_infinity_and_beyond" | grep -v grep | awk '{print $2}')
+if [ -n "$pids" ]; then
+  for pid in $pids; do
+    python3 -c "import os, signal; os.kill($pid, signal.SIGTERM)"
+  done
 fi
-
