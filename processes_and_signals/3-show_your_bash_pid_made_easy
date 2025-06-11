@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#shfjkashfjsdk
+for pid in /proc/[0-9]*; do
+    cmdline_file="$pid/comm"
+    if [ -r "$cmdline_file" ]; then
+        process_name=$(<"$cmdline_file")
+        if [[ "$process_name" == *bash* ]]; then
+            echo "$(basename "$pid") $process_name"
+        fi
+    fi
+done
