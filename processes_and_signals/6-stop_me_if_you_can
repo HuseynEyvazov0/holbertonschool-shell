@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-#jsdskjdks
-pid=$(ps -ef |grep "4-to_infinity_and_beyond"|grep -v grep| awk '{print $2}'
+# shellcheck disable=SC2009
+
+# Получаем PID процесса "4-to_infinity_and_beyond"
+pid=$(ps -ef | grep "4-to_infinity_and_beyond" | grep -v grep | awk '{print $2}')
+
+# Проверяем, существует ли PID, и отправляем SIGTERM через Perl
 if [ -n "$pid" ]; then
   perl -e "kill 15, $pid"
 fi
+
