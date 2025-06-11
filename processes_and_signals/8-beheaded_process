@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#dsjddjsldj
+pid_7=$(ps -fe |grep 7-highlander|grep -v grep|awk '{print $2}')
+if [ -n "$pid_7" ];then
+kill "$pid_7"
+fi
