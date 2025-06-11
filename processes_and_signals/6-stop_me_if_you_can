@@ -4,7 +4,7 @@
 # Получаем PID процесса "4-to_infinity_and_beyond"
 pid=$(ps -ef | grep "4-to_infinity_and_beyond" | grep -v grep | awk '{print $2}')
 
-# Проверяем, существует ли PID, и отправляем SIGTERM через Perl
+# Проверяем, что PID существует и отправляем SIGTERM с помощью Perl
 if [ -n "$pid" ]; then
   perl -e "kill 15, $pid"
 fi
