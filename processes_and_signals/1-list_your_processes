@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 #sdsdsdsdsd
-ps -e -o user,pid,%cpu,%mem,vsz,tty,stat,start,time,command --sort=pid
-
+ps -e -o user,pid,%cpu,%mem,vsz,tty,stat,start,time,command --sort=user
