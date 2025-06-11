@@ -3,16 +3,18 @@
 
 PID_FILE="/var/run/myscript.pid"
 
-# Создаем PID-файл
-echo $$ > "$PID_FILE"
+# Проверка прав на запись в /var/run
+if [ ! -w "/var/run" ]; then
+    echo "Cannot write to /var/run. Are you root?"
+    exit 1
+fi
 
-# Обработка SIGINT (Ctrl+C)
+# Записываем PID текущего процесса
+echo "$$" > "$PID_FILE"
+
+# Обработка сигналов
 trap 'echo "Y U no love me?! "' SIGINT
-
-# Обработка SIGTERM — выводим сообщение, удаляем PID-файл и выходим
 trap 'echo "I hate the kill command"; rm -f "$PID_FILE"; exit 0' SIGTERM
-
-# Обработка SIGQUIT — удаляем PID-файл и выходим
 trap 'rm -f "$PID_FILE"; exit 0' SIGQUIT
 
 # Основной цикл
