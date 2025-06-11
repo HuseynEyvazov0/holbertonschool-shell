@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# This script creates a pid file and handles specific signals
+# This script writes its PID to /var/run/myscript.pid and handles signals gracefully
 
 PID_FILE="/var/run/myscript.pid"
 
-# Create the PID file
-echo "$$" > "$PID_FILE"
+# Создаем PID-файл
+echo $$ > "$PID_FILE"
 
-# Handle SIGINT (Ctrl+C)
-trap 'echo "Y U no love me?!"' SIGINT
+# Обработка SIGINT (Ctrl+C)
+trap 'echo "Y U no love me?! "' SIGINT
 
-# Handle SIGTERM
-trap 'echo "I hate the kill command"' SIGTERM
+# Обработка SIGTERM — выводим сообщение, удаляем PID-файл и выходим
+trap 'echo "I hate the kill command"; rm -f "$PID_FILE"; exit 0' SIGTERM
 
-# Handle SIGQUIT and SIGTERM — for cleanup and exit
-trap 'rm -f "$PID_FILE"; exit 0' SIGQUIT SIGTERM
+# Обработка SIGQUIT — удаляем PID-файл и выходим
+trap 'rm -f "$PID_FILE"; exit 0' SIGQUIT
 
-# Infinite loop
+# Основной цикл
 while true; do
     echo "To infinity and beyond"
     sleep 2
