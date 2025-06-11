@@ -1,24 +1,23 @@
 #!/usr/bin/env bash
-# This script writes its PID to /var/run/myscript.pid and handles signals gracefully
+# This script saves its PID to a file and reacts to signals
 
 PID_FILE="/var/run/myscript.pid"
 
-# Проверка прав на запись в /var/run
-if [ ! -w "/var/run" ]; then
-    echo "Cannot write to /var/run. Are you root?"
-    exit 1
-fi
-
-# Записываем PID текущего процесса
+# Create the PID file
 echo "$$" > "$PID_FILE"
 
-# Обработка сигналов
-trap 'echo "Y U no love me?! "' SIGINT
+# Trap SIGINT (Ctrl+C)
+trap 'echo "Y U no love me?!"' SIGINT
+
+# Trap SIGTERM (kill command)
 trap 'echo "I hate the kill command"; rm -f "$PID_FILE"; exit 0' SIGTERM
+
+# Trap SIGQUIT (Ctrl+\)
 trap 'rm -f "$PID_FILE"; exit 0' SIGQUIT
 
-# Основной цикл
+# Main loop
 while true; do
     echo "To infinity and beyond"
-    sleep 2
+    sleep 1
 done
+
