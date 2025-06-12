@@ -1,74 +1,35 @@
 #!/usr/bin/env bash
-#fdfdhfjdfdjfhdf
-
-set -euo pipefail
-
-PROCESS_SCRIPT="/usr/local/bin/manage_my_process"
+# Script to manage the background process: manage_my_process
 PID_FILE="/var/run/my_process.pid"
-
-start_process() {
-    if ! [[ -x "$PROCESS_SCRIPT" ]]; then
-        printf "%s is not executable or not found\n" "$PROCESS_SCRIPT" >&2
-        return 1
-    fi
-
-    nohup "$PROCESS_SCRIPT" >/dev/null 2>&1 &
-    local pid=$!
-    echo "$pid" > "$PID_FILE"
-    printf "manage_my_process started\n"
-}
-
-stop_process() {
-    if [[ ! -f "$PID_FILE" ]]; then
-        printf "PID file not found: %s\n" "$PID_FILE" >&2
-        return 1
-    fi
-
-    local pid; pid=$(<"$PID_FILE")
-
-    if ! kill "$pid" 2>/dev/null; then
-        printf "Failed to stop process with PID %s\n" "$pid" >&2
-        return 1
-    fi
-
-    rm -f "$PID_FILE"
-    printf "manage_my_process stopped\n"
-}
-
-restart_process() {
-    stop_process || true
-    nohup "$PROCESS_SCRIPT" >/dev/null 2>&1 &
-    local pid=$!
-    echo "$pid" > "$PID_FILE"
-    printf "manage_my_process restarted\n"
-}
-
-print_usage() {
-    printf "Usage: manage_my_process {start|stop|restart}\n"
-}
-
-main() {
-    if [[ $# -ne 1 ]]; then
-        print_usage
-        return 1
-    fi
-
-    case "$1" in
-        start)
-            start_process
-            ;;
-        stop)
-            stop_process
-            ;;
-        restart)
-            restart_process
-            ;;
-        *)
-            print_usage
-            return 1
-            ;;
-    esac
-}
-
-main "$@"
-
+PROCESS_SCRIPT="./manage_my_process"
+case "$1" in
+    start)
+        nohup "$PROCESS_SCRIPT" > /dev/null 2>&1 &
+        echo $! > "$PID_FILE"
+        echo "manage_my_process started"
+        ;;
+    stop)
+        if [ -f "$PID_FILE" ]; then
+            PID=$(cat "$PID_FILE")
+            if kill "$PID" 2>/dev/null; then
+                sleep 1
+            fi
+            rm -f "$PID_FILE"
+        fi
+        echo "manage_my_process stopped"
+        ;;
+    restart)
+        if [ -f "$PID_FILE" ]; then
+            PID=$(cat "$PID_FILE")
+            kill "$PID" 2>/dev/null
+            rm -f "$PID_FILE"
+        fi
+        nohup "$PROCESS_SCRIPT" > /dev/null 2>&1 &
+        echo $! > "$PID_FILE"
+        echo "manage_my_process restarted"
+        ;;
+    *)
+        echo "Usage: manage_my_process {start|stop|restart}"
+        exit 1
+        ;;
+esac
