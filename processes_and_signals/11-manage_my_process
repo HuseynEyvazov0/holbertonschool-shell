@@ -1,41 +1,33 @@
 #!/usr/bin/env bash
-#sdljsljdlsjd
+#sdjsjdsjskdjk
 PID_FILE="/var/run/my_process.pid"
-PROCESS_PATH="$(dirname "$0")/manage_my_process"
+PROCESS_SCRIPT="./manage_my_process"
 
 case "$1" in
-  start)
-    "$PROCESS_PATH" &
-    echo $! > "$PID_FILE"
-    echo "manage_my_process started"
-    ;;
-  stop)
-    if [ -f "$PID_FILE" ]; then
-      PID=$(cat "$PID_FILE")
-      if kill "$PID" 2>/dev/null; then
-        rm -f "$PID_FILE"
-        echo "manage_my_process stopped"
-      else
-        echo "Error: Failed to stop process with PID $PID"
+    start)
+        $PROCESS_SCRIPT &
+        echo $! > "$PID_FILE"
+        echo "manage_my_process started"
+        ;;
+    stop)
+        if [ -f "$PID_FILE" ]; then
+            kill "$(cat "$PID_FILE")" 2>/dev/null
+            rm -f "$PID_FILE"
+            echo "manage_my_process stopped"
+        fi
+        ;;
+    restart)
+        if [ -f "$PID_FILE" ]; then
+            kill "$(cat "$PID_FILE")" 2>/dev/null
+            rm -f "$PID_FILE"
+        fi
+        $PROCESS_SCRIPT &
+        echo $! > "$PID_FILE"
+        echo "manage_my_process restarted"
+        ;;
+    *)
+        echo "Usage: manage_my_process {start|stop|restart}"
         exit 1
-      fi
-    else
-      echo "Error: PID file not found. Is manage_my_process running?"
-      exit 1
-    fi
-    ;;
-  restart)
-    if [ -f "$PID_FILE" ]; then
-      PID=$(cat "$PID_FILE")
-      kill "$PID" 2>/dev/null
-      rm -f "$PID_FILE"
-    fi
-    "$PROCESS_PATH" &
-    echo $! > "$PID_FILE"
-    echo "manage_my_process restarted"
-    ;;
-  *)
-    echo "Usage: manage_my_process {start|stop|restart}"
-    exit 1
-    ;;
+        ;;
 esac
+
