@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #sdljsljdlsjd
 PID_FILE="/var/run/my_process.pid"
 PROCESS_PATH="$(dirname "$0")/manage_my_process"
