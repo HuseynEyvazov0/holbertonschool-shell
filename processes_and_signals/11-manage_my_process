@@ -1,33 +1,77 @@
 #!/usr/bin/env bash
-#sdjsjdsjskdjk
-PID_FILE="/var/run/my_process.pid"
-PROCESS_SCRIPT="./manage_my_process"
+# Init-style script to manage the manage_my_process background daemon 
+set -euo pipefail
 
-case "$1" in
-    start)
-        $PROCESS_SCRIPT &
-        echo $! > "$PID_FILE"
-        echo "manage_my_process started"
-        ;;
-    stop)
-        if [ -f "$PID_FILE" ]; then
-            kill "$(cat "$PID_FILE")" 2>/dev/null
-            rm -f "$PID_FILE"
-            echo "manage_my_process stopped"
-        fi
-        ;;
-    restart)
-        if [ -f "$PID_FILE" ]; then
-            kill "$(cat "$PID_FILE")" 2>/dev/null
-            rm -f "$PID_FILE"
-        fi
-        $PROCESS_SCRIPT &
-        echo $! > "$PID_FILE"
-        echo "manage_my_process restarted"
-        ;;
-    *)
-        echo "Usage: manage_my_process {start|stop|restart}"
-        exit 1
-        ;;
-esac
+PROCESS_SCRIPT="/usr/local/bin/manage_my_process"
+PID_FILE="/var/run/my_process.pid"
+LOG_FILE="/tmp/my_process"
+
+start_process() {
+    if ! command -v sudo &>/dev/null; then
+        printf "sudo command not found\n" >&2
+        return 1
+    fi
+
+    if ! [[ -x "$PROCESS_SCRIPT" ]]; then
+        printf "%s is not executable or not found\n" "$PROCESS_SCRIPT" >&2
+        return 1
+    fi
+
+    "$PROCESS_SCRIPT" &
+    local pid=$!
+    printf "%s\n" "$pid" > "$PID_FILE"
+    printf "manage_my_process started\n"
+}
+
+stop_process() {
+    if [[ ! -f "$PID_FILE" ]]; then
+        printf "PID file not found: %s\n" "$PID_FILE" >&2
+        return 1
+    fi
+
+    local pid; pid=$(<"$PID_FILE")
+
+    if ! kill "$pid" 2>/dev/null; then
+        printf "Failed to stop process with PID %s\n" "$pid" >&2
+        return 1
+    fi
+
+    rm -f "$PID_FILE"
+    printf "manage_my_process stopped\n"
+}
+
+restart_process() {
+    stop_process || true
+    start_process
+    printf "manage_my_process restarted\n"
+}
+
+print_usage() {
+    printf "Usage: manage_my_process {start|stop|restart}\n"
+}
+
+main() {
+    if [[ $# -ne 1 ]]; then
+        print_usage
+        return 1
+    fi
+
+    case "$1" in
+        start)
+            start_process
+            ;;
+        stop)
+            stop_process
+            ;;
+        restart)
+            restart_process
+            ;;
+        *)
+            print_usage
+            return 1
+            ;;
+    esac
+}
+
+main "$@"
 
