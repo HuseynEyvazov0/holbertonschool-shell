@@ -11,14 +11,23 @@ case "$1" in
     ;;
   stop)
     if [ -f "$PID_FILE" ]; then
-      kill "$(cat "$PID_FILE")" 2>/dev/null
-      rm -f "$PID_FILE"
-      echo "manage_my_process stopped"
+      PID=$(cat "$PID_FILE")
+      if kill "$PID" 2>/dev/null; then
+        rm -f "$PID_FILE"
+        echo "manage_my_process stopped"
+      else
+        echo "Error: Failed to stop process with PID $PID"
+        exit 1
+      fi
+    else
+      echo "Error: PID file not found. Is manage_my_process running?"
+      exit 1
     fi
     ;;
   restart)
     if [ -f "$PID_FILE" ]; then
-      kill "$(cat "$PID_FILE")" 2>/dev/null
+      PID=$(cat "$PID_FILE")
+      kill "$PID" 2>/dev/null
       rm -f "$PID_FILE"
     fi
     "$PROCESS_PATH" &
@@ -30,4 +39,3 @@ case "$1" in
     exit 1
     ;;
 esac
-
