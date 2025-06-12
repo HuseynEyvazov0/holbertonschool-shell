@@ -1,41 +1,18 @@
 #!/usr/bin/env bash
-# This script saves its PID to a file and reacts to signals
-PID_FILE="/var/run/my_process.pid"
-PROCESS_PATH="$(dirname "$0")/manage_my_process"
-
-case "$1" in
-  start)
-    "$PROCESS_PATH" &
-    echo $! > "$PID_FILE"
-    echo "manage_my_process started"
-    ;;
-  stop)
-    if [ -f "$PID_FILE" ]; then
-      PID=$(cat "$PID_FILE")
-      if kill "$PID" 2>/dev/null; then
-        rm -f "$PID_FILE"
-        echo "manage_my_process stopped"
-      else
-        echo "Error: Failed to stop process with PID $PID"
-        exit 1
-      fi
-    else
-      echo "Error: PID file not found. Is manage_my_process running?"
-      exit 1
-    fi
-    ;;
-  restart)
-    if [ -f "$PID_FILE" ]; then
-      PID=$(cat "$PID_FILE")
-      kill "$PID" 2>/dev/null
-      rm -f "$PID_FILE"
-    fi
-    "$PROCESS_PATH" &
-    echo $! > "$PID_FILE"
-    echo "manage_my_process restarted"
-    ;;
-  *)
-    echo "Usage: manage_my_process {start|stop|restart}"
-    exit 1
-    ;;
-esac
+# Script that manages its own PID file and handles signals
+# Create PID file
+echo $$ > /var/run/myscript.pid
+# Clean up PID file on exit
+cleanup() {
+    rm -f /var/run/myscript.pid
+    exit 0
+}
+# Signal handlers
+trap 'echo "I hate the kill command"; cleanup' SIGTERM
+trap 'echo "Y U no love me?!"; cleanup' SIGINT
+trap cleanup SIGQUIT
+# Main loop
+while true; do
+    echo "To infinity and beyond"
+    sleep 1
+done
